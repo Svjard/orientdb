@@ -151,7 +151,7 @@ public class OEmbeddedDBFactory implements OrientDBFactory {
         config = solveConfig(config);
         OAbstractPaginatedStorage storage;
         if (type == DatabaseType.MEMORY) {
-          storage = (OAbstractPaginatedStorage) memory.createStorage(buildName(name), new HashMap<>());
+          storage = (OAbstractPaginatedStorage) memory.createStorage(name, new HashMap<>());
         } else {
           storage = (OAbstractPaginatedStorage) disk.createStorage(buildName(name), new HashMap<>());
         }

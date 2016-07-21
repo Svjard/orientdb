@@ -27,11 +27,7 @@ import com.orientechnologies.orient.core.exception.OConfigurationException;
 import com.orientechnologies.orient.core.exception.OSchemaException;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.intent.OIntentMassiveInsert;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OClassImpl;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OSchemaProxy;
-import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.metadata.schema.*;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.etl.OETLPipeline;
 import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
@@ -242,7 +238,7 @@ public class OOrientDBLoader extends OAbstractLoader implements OLoader {
   private OClass getOrCreateClassOnGraph(ODatabaseDocument db, String iClassName, String iSuperClass) {
     OClass cls;// GRAPH
     final OrientBaseGraph graphDatabase = new OrientGraphNoTx(db.getURL());
-    OSchemaProxy schema = graphDatabase.getRawGraph().getMetadata().getSchema();
+    OSchema schema = graphDatabase.getRawGraph().getMetadata().getSchema();
     cls = schema.getClass(iClassName);
 
     if (cls == null) {
