@@ -8,7 +8,6 @@ import com.orientechnologies.orient.core.config.OContextConfiguration;
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.conflict.ORecordConflictStrategy;
 import com.orientechnologies.orient.core.db.*;
-import com.orientechnologies.orient.core.db.ODatabase.STATUS;
 import com.orientechnologies.orient.core.db.record.OCurrentStorageComponentsFactory;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.db.record.ridbag.sbtree.OSBTreeCollectionManager;
@@ -45,7 +44,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-
 /**
  * Created by tglman on 20/07/16.
  */
@@ -54,7 +52,7 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
   private static ConcurrentMap<String, OrientDBFactory> embedded = new ConcurrentHashMap<>();
   private static ConcurrentMap<String, OrientDBFactory> remote   = new ConcurrentHashMap<>();
 
-  private ODatabaseDocumentInternal                     internal;
+  protected ODatabaseDocumentInternal                   internal;
   private final String                                  url;
   private OrientDBFactory                               factory;
   private final String                                  type;

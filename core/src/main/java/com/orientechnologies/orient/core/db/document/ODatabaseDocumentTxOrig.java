@@ -3144,7 +3144,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
   public void checkIfActive() {
     final ODatabaseRecordThreadLocal tl = ODatabaseRecordThreadLocal.INSTANCE;
-    final ODatabaseDocumentInternal currentDatabase = tl != null ? tl.get() : null;
+    ODatabaseDocumentInternal currentDatabase = tl != null ? tl.get() : null;
+    if(currentDatabase instanceof ODatabaseDocumentTx){
+      currentDatabase = ((ODatabaseDocumentTx)currentDatabase).internal;
+    }
     if (currentDatabase != this)
       throw new IllegalStateException(
           "The current database instance (" + toString() + ") is not active on the current thread (" + Thread.currentThread()
