@@ -30,6 +30,7 @@ import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.binary.OBinarySerializerFactory;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer;
+import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
 import com.orientechnologies.orient.core.sql.executor.OTodoResultSet;
 import com.orientechnologies.orient.core.storage.ORecordCallback;
 import com.orientechnologies.orient.core.storage.ORecordMetadata;
@@ -59,6 +60,7 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
   private final String                                  dbName;
   private final String                                  baseUrl;
   private final Map<String, Object>                     preopenProperties = new HashMap<>();
+  private ODatabaseInternal<?> databaseOwner;
 
   public ODatabaseDocumentTx(String url) {
     this.url = url;
@@ -75,14 +77,14 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
     }
   }
 
-  private ODatabaseDocumentTx(ODatabaseDocumentTx other) {
-    url = other.url;
-    type = other.type;
-    baseUrl = other.baseUrl;
-    dbName = other.dbName;
-    internal = other.internal.copy();
+  protected ODatabaseDocumentTx(ODatabaseDocumentInternal ref,String baseUrl) {
+    url = ref.getURL();
+    type = ref.getType();
+    this.baseUrl = baseUrl;
+    dbName = ref.getName();
+    internal = ref;
   }
-
+ 
   public static ORecordSerializer getDefaultSerializer() {
     return ODatabaseDocumentTxOrig.getDefaultSerializer();
   }
@@ -93,13 +95,15 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public OCurrentStorageComponentsFactory getStorageVersions() {
-    checkOpeness();
+    if (internal == null)
+      return null;
     return internal.getStorageVersions();
   }
 
   @Override
   public OSBTreeCollectionManager getSbTreeCollectionManager() {
-    checkOpeness();
+    if (internal == null)
+      return null;
     return internal.getSbTreeCollectionManager();
   }
 
@@ -111,7 +115,8 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public ORecordSerializer getSerializer() {
-    checkOpeness();
+    if (internal == null)
+      return ORecordSerializerFactory.instance().getDefaultRecordSerializer();
     return internal.getSerializer();
   }
 
@@ -225,7 +230,7 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public String getType() {
-    return internal.getType();
+    return this.type;
   }
 
   @Override
@@ -255,7 +260,7 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public ODatabaseDocumentTx copy() {
-    return new ODatabaseDocumentTx(this);
+    return new ODatabaseDocumentTx(this.internal.copy(), this.baseUrl);
   }
 
   @Override
@@ -315,14 +320,19 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public ODatabaseInternal<?> getDatabaseOwner() {
-    checkOpeness();
-    internal.getDatabaseOwner();
-    return this;
+    ODatabaseInternal<?> current = databaseOwner;
+
+    while (current != null && current != this && current.getDatabaseOwner() != current)
+      current = current.getDatabaseOwner();
+
+    return current;
   }
 
   @Override
   public ODatabaseInternal<?> setDatabaseOwner(ODatabaseInternal<?> iOwner) {
-    internal.setDatabaseOwner(iOwner);
+    databaseOwner = iOwner;
+    if (internal != null)
+      internal.setDatabaseOwner(iOwner);
     return this;
   }
 
@@ -727,8 +737,7 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public boolean isPooled() {
-    checkOpeness();
-    return internal.isPooled();
+    return false;
   }
 
   @Override
@@ -753,6 +762,8 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
       OrientDBConfig config = bindPropertiesToConfig(preopenProperties);
       internal = (ODatabaseDocumentInternal) factory.open(dbName, iUserName, iUserPassword, config);
     }
+    if(databaseOwner != null)
+      internal.setDatabaseOwner(databaseOwner);
     return (DB) this;
   }
 
@@ -795,8 +806,9 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
       
       internal = (ODatabaseDocumentInternal) factory.open(dbName, "admin", "admin", config);
     }
+    if(databaseOwner != null)
+      internal.setDatabaseOwner(databaseOwner);
     return (DB) this;
-
   }
 
   @Override
@@ -833,7 +845,6 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public boolean declareIntent(OIntent iIntent) {
-    checkOpeness();
     return internal.declareIntent(iIntent);
   }
 
@@ -855,9 +866,10 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public void close() {
-    checkOpeness();
-    internal.close();
-    internal = null;
+    if (internal != null) {
+      internal.close();
+      internal = null;
+    }
   }
 
   @Override
@@ -880,8 +892,7 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public String getName() {
-    checkOpeness();
-    return internal.getName();
+    return dbName;
   }
 
   @Override
