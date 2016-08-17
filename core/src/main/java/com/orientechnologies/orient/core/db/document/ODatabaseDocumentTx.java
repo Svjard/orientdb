@@ -1148,7 +1148,6 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
   }
 
   
-  
   private OrientDBConfig buildConfig(final Map<OGlobalConfiguration, Object> iProperties) {
     Map<String, Object> pars = new HashMap<>(preopenProperties);
     if (iProperties != null) {
@@ -1188,17 +1187,25 @@ public class ODatabaseDocumentTx implements ODatabaseDocumentInternal {
 
   @Override
   public OTodoResultSet query(String query, Map args) throws OCommandSQLParsingException, OCommandExecutionException {
+    checkOpeness();
     return internal.query(query, args);
   }
 
   @Override
   public OTodoResultSet command(String query, Object... args) throws OCommandSQLParsingException, OCommandExecutionException {
+    checkOpeness();
     return internal.command(query, args);
   }
 
   @Override
   public OTodoResultSet command(String query, Map args) throws OCommandSQLParsingException, OCommandExecutionException {
+    checkOpeness();
     return internal.command(query, args);
+  }
+
+  @Override
+  public <DB extends ODatabase> DB setCustom(String name, Object iValue) {
+    return internal.setCustom(name, iValue);
   }
   
 }
