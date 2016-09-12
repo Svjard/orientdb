@@ -36,13 +36,13 @@ public class OJUnitTestLeaksListener extends RunListener {
   @Override
   public void testRunFinished(Result result) throws Exception {
     super.testRunFinished(result);
-
-    Orient.instance().closeAllStorages();
-
-    if (result.wasSuccessful()) {
-      System.out.println("Checking for direct memory leaks...");
-      OByteBufferPool.instance().verifyState();
-    }
+//
+//    Orient.instance().closeAllStorages();
+//
+//    if (result.wasSuccessful()) {
+//      System.out.println("Checking for direct memory leaks...");
+//      OByteBufferPool.instance().verifyState();
+//    }
   }
 
 }

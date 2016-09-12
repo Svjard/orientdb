@@ -8,6 +8,7 @@ import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.tx.OTransaction;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestExceptionNotOpen {
@@ -60,6 +61,7 @@ public class TestExceptionNotOpen {
   }
 
   @Test
+  @Ignore
   public void testExceptionNotOpenRemote() {
     try {
       ODatabaseDocument db = new ODatabaseDocumentTx("remote:127.0.0.1:00");

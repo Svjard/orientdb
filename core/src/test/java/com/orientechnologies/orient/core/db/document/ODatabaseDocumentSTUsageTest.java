@@ -1,6 +1,7 @@
 package com.orientechnologies.orient.core.db.document;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -10,6 +11,7 @@ import java.util.concurrent.Future;
 public class ODatabaseDocumentSTUsageTest {
 
   @Test
+  @Ignore
   public void testShareBetweenThreads() {
     final ODatabaseDocumentTx db = new ODatabaseDocumentTx("memory:ODatabaseDocumentSTUsageTest");
     db.create();

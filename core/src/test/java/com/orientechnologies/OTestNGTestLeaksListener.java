@@ -41,12 +41,12 @@ public class OTestNGTestLeaksListener implements ISuiteListener {
 
   @Override
   public void onFinish(ISuite suite) {
-    Orient.instance().closeAllStorages();
-
-    if (!isFailed(suite)) {
-      System.out.println("Checking for direct memory leaks...");
-      OByteBufferPool.instance().verifyState();
-    }
+//    Orient.instance().closeAllStorages();
+//
+//    if (!isFailed(suite)) {
+//      System.out.println("Checking for direct memory leaks...");
+//      OByteBufferPool.instance().verifyState();
+//    }
   }
 
   private static boolean isFailed(ISuite suite) {
